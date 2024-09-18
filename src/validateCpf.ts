@@ -5,15 +5,15 @@ const SECOND_DIGIT_FACTOR = 11;
 export function validateCpf(cpf: string) {
   cpf = cpf.replace(/\D/g, "");
   if (cpf.length !== CPF_VALID_LENGTH) return false;
-  if (allDigitsAreTheSame(cpf)) return false;
+  if (allDigitsTheSame(cpf)) return false;
   const digit1 = calculateDigit(cpf, FIRST_DIGIT_FACTOR);
   const digit2 = calculateDigit(cpf, SECOND_DIGIT_FACTOR);
   return `${digit1}${digit2}` === extractDigit(cpf);
 }
 
-function allDigitsAreTheSame(cpf: string) {
+function allDigitsTheSame(cpf: string) {
   const [firstDigit] = cpf;
-  return cpf.split("").every((digit) => digit === firstDigit);
+  return [...cpf].every((digit) => digit === firstDigit);
 }
 
 function calculateDigit(cpf: string, factor: number) {
@@ -21,8 +21,8 @@ function calculateDigit(cpf: string, factor: number) {
   for (const digit of cpf) {
     if (factor > 1) total += parseInt(digit) * factor--;
   }
-  const remainder = total % CPF_VALID_LENGTH;
-  return remainder < 2 ? 0 : CPF_VALID_LENGTH - remainder;
+  const remainder = total % 11;
+  return remainder < 2 ? 0 : 11 - remainder;
 }
 
 function extractDigit(cpf: string) {
