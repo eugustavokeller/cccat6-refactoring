@@ -1,4 +1,7 @@
-import { AccountDAODatabase, AccountDAOMemory } from "../src/AccountDAO";
+import {
+  AccountRepositoryDatabase,
+  AccountRepositoryMemory,
+} from "../src/AccountRepository";
 import GetAccount from "../src/GetAccount";
 import { MailerGatewayMemory } from "../src/MailerGateway";
 import Signup from "../src/Signup";
@@ -9,13 +12,13 @@ let getAccount: GetAccount;
 
 // Integration Narrow -> Broad
 beforeEach(() => {
-  const accountDAO = new AccountDAODatabase();
+  const accountRepository = new AccountRepositoryDatabase();
   // fake
-  // const accountDAO = new AccountDAOMemory();
+  // const accountRepository = new AccountRepositoryMemory();
   // fake
   const mailerGateway = new MailerGatewayMemory();
-  signup = new Signup(accountDAO, mailerGateway);
-  getAccount = new GetAccount(accountDAO);
+  signup = new Signup(accountRepository, mailerGateway);
+  getAccount = new GetAccount(accountRepository);
 });
 
 test("Deve criar a conta de um passageiro", async function () {
@@ -108,7 +111,7 @@ test("Deve criar a conta de um passageiro com stub", async function () {
     .stub(MailerGatewayMemory.prototype, "send")
     .resolves();
   const getAccountByEmail = sinon
-    .stub(AccountDAODatabase.prototype, "getAccountByEmail")
+    .stub(AccountRepositoryDatabase.prototype, "getAccountByEmail")
     .resolves();
   const input = {
     name: "John Doe",

@@ -1,8 +1,6 @@
-import crypto from "crypto";
-import pgp from "pg-promise";
-import { validateCpf } from "./validateCpf";
-import AccountDAO from "./AccountDAO";
+import AccountDAO from "./AccountRepository";
 import MailerGateway from "./MailerGateway";
+import Account from "./Account";
 
 export default class Signup {
   constructor(
@@ -11,19 +9,21 @@ export default class Signup {
   ) {}
 
   async execute(input: any) {
-    input.accountId = crypto.randomUUID();
+    const account = Account.create(
+      input.name,
+      input.email,
+      input.cpf,
+      input.carPlate,
+      input.password,
+      input.isPassenger,
+      input.isDriver
+    );
     const accountData = await this.accountDAO.getAccountByEmail(input.email);
     if (accountData) throw new Error("Duplicated account");
-    if (!input.name.match(/[a-zA-Z] [a-zA-Z]+/))
-      throw new Error("Invalid name");
-    if (!input.email.match(/^(.+)@(.+)$/)) throw new Error("Invalid email");
-    if (!validateCpf(input.cpf)) throw new Error("Invalid cpf");
-    if (input.isDriver && !input.carPlate.match(/[A-Z]{3}[0-9]{4}/))
-      throw new Error("Invalid car plate");
-    await this.accountDAO.saveAccount(input);
-    await this.mailerGateway.send(input.email, "Welcome!", "...");
+    await this.accountDAO.saveAccount(account);
+    await this.mailerGateway.send(account.getEmail(), "Welcome!", "...");
     return {
-      accountId: input.accountId,
+      accountId: account.getAccountId(),
     };
   }
 }

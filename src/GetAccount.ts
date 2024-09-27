@@ -1,10 +1,20 @@
-import AccountDAO from "./AccountDAO";
+import AccountRepository from "./AccountRepository";
 
 export default class GetAccount {
-  constructor(readonly accountDAO: AccountDAO) {}
+  constructor(readonly accountRepository: AccountRepository) {}
 
   async execute(accountId: string) {
-    const accountData = await this.accountDAO.getAccountById(accountId);
-    return accountData;
+    const account = await this.accountRepository.getAccountById(accountId);
+    // DTO - Data Transfer Object
+    return {
+      accountId: account.getAccountId(),
+      name: account.getName(),
+      email: account.getEmail(),
+      cpf: account.getCpf(),
+      carPlate: account.getCarPlate(),
+      password: account.getPassword(),
+      isPassenger: account.isPassenger,
+      isDriver: account.isDriver,
+    };
   }
 }
